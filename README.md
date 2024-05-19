@@ -1,1 +1,1 @@
-# Heritability
+# heritability
