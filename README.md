@@ -92,6 +92,13 @@ df.to_csv('asthma.gz', compression='gzip', index=False, sep="\t")
 - Generate two copies of the genotype data based on the GWAS build (hg19 or hg38).
 - Find the common predictors and use the SNPs in the genotype .bim file to fill the SNP column in the GWAS.
 
+| CHR | BP        | SNP         | A1 | A2 | N     | SE     | P      | BETA   | INFO | MAF               |
+|-----|-----------|-------------|----|----|-------|--------|--------|--------|------|-------------------|
+| 1   | 100008709 | rs55727773  | T  | G  | 449500| 0.0148 | 0.4387 | -0.0115| 1    | 0.881099991887257 |
+| 1   | 100011667 | rs113462541 | C  | T  | 449500| 0.0096 | 0.4591 | 0.0071 | 1    | 0.835926208119123 |
+| 1   | 100015703 | rs12028261  | T  | C  | 449500| 0.0071 | 0.6983 | 0.0027 | 1    | 0.505985657483862 |
+
+
 5. Save the final file based on the following format:
 
 ```bash
