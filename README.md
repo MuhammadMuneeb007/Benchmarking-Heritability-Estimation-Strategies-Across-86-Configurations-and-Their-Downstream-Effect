@@ -30,7 +30,7 @@ In this research, we used various heritability tools and created multiple varian
 
 Below is the diagram showcasing the data:
 
-<img src="attachment:2a867db0-a41b-4086-b4e3-ef21f72d4911.png" width="50%">
+<img src="Data.png" width="50%">
 
 
 | Phenotype                                | PMID     | File Name                           | SNPs in GWAS (G) | SNPs in Genotype data (GE) | Common in G and GE | DOI                              | Cite            |
