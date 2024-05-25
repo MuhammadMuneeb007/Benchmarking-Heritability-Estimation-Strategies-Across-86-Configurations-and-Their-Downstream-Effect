@@ -1,4 +1,3 @@
-# heritability
 ## Heritability tools
 
 There are multiple tools to calculate heritability, as shown in the table below. The statistical methods they used to calculate heritability vary for each tool. Moreover, the dataset they used to calculate the heritability varies as well. Some tools use the GWAS summary statistic file, some use the genotype data, covariates, and PCA, and some tools use the reference panels and SNPs tagging for calculating heritability.
