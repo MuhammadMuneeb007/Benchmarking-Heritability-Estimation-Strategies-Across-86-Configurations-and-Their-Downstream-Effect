@@ -31,6 +31,80 @@ In this research, we used various heritability tools and created multiple varian
 
 We analyzed 14 phenotypes from the UK Biobank and downloaded the corresponding GWAS files from the GWAS catalog (https://www.ebi.ac.uk/gwas/). After converting the genotype data to match the GWAS file's genotype build, we calculated the number of common variants between the GWAS files and the genotype data. Three phenotypes were removed from further analysis due to a limited number of variants.
 
+## GWAS Data Processing
+
+### Steps for Processing GWAS Data
+
+1. **Download the GWAS file for a specific phenotype.**
+
+2. **Transform the GWAS file to a specific format accepted by most PRS tools.** 
+   - The sample transformation code for one phenotype (asthma) is shown below.
+
+#### Original GWAS file for asthma:
+| chromosome | base_pair_location | effect_allele | other_allele | effect_allele_frequency | beta   | standard_error | p_value | variant_id |
+|------------|--------------------|---------------|--------------|-------------------------|--------|----------------|---------|------------|
+| 1          | 100000012          | T             | G            | 0.28029314035229        | 0.0055 | 0.0077         | 0.4756  | NA         |
+| 1          | 10000006           | A             | G            | 0.00547967251882486     | -0.1081| 0.0560         | 0.05366 | NA         |
+| 1          | 100000135          | T             | A            | 0.00172932855852879     | 0.0255 | 0.1026         | 0.8037  | NA         |
+| 1          | 100000374          | C             | G            | 0.000580831145737331    | 0.0204 | 0.2956         | 0.9451  | NA         |
+| 1          | 100000827          | T             | C            | 0.329735132840309       | 0.0016 | 0.0074         | 0.8236  | NA         |
+
+#### Transformation Code:
+```python
+import pandas as pd
+
+df = pd.read_csv('gwas.csv.modified')
+print(df.head())
+print(df.columns)
+
+column_map = {
+    'chromosome': 'CHR', 
+    'variant_id': 'SNP', 
+    'base_pair_location': 'BP',
+    'effect_allele': 'A1', 
+    'other_allele': 'A2', 
+    'p_value': 'P',
+    'effect_allele_frequency': 'MAF', 
+    'beta': 'BETA', 
+    'standard_error': 'SE'
+}
+
+df = df.rename(columns=column_map)
+
+df["SNP"] = "X"
+df["INFO"] = 1
+df["N"] = 449500
+
+df = df[['CHR', 'BP', 'SNP', 'A1', 'A2', 'N', 'SE', 'P', 'BETA', 'INFO', 'MAF']]
+
+df.to_csv('asthma.gz', compression='gzip', index=False, sep="\t")
+```
+| CHR | BP         | SNP | A1 | A2 | N     | SE    | P      | BETA   | INFO | MAF               |
+|-----|------------|-----|----|----|-------|-------|--------|--------|------|-------------------|
+| 1   | 100000012  | X   | T  | G  | 449500| 0.0077| 0.4756 | 0.0055 | 1    | 0.28029314035229  |
+| 1   | 10000006   | X   | A  | G  | 449500| 0.056 | 0.05366| -0.1081| 1    | 0.0054796725188248|
+| 1   | 100000135  | X   | T  | A  | 449500| 0.1026| 0.8037 | 0.0255 | 1    | 0.0017293285585287|
+
+3.  Detect the genomic build of the GWAS.
+
+4.  Handle missing RSID or SNP information:
+
+- Generate two copies of the genotype data based on the GWAS build (hg19 or hg38).
+- Find the common predictors and use the SNPs in the genotype .bim file to fill the SNP column in the GWAS.
+
+5. Save the final file based on the following format:
+
+```bash
+# Define file paths for different data files
+BED = asthma/asthma.bed
+BIM = asthma/asthma.bim
+FAM = asthma/asthma.fam
+COV = asthma/asthma.COV
+Height = asthma/asthma.PHENO
+GWAS = asthma/asthma.gz
+```
+
+
 Below is the diagram showcasing data processing:
 
 <img src="Data.png" width="50%">
