@@ -28,7 +28,7 @@ In this research, we used various heritability tools and created multiple varian
 | pyliftover | A Python package for genomic coordinate conversion | [https://pypi.org/project/pyliftover/](https://pypi.org/project/pyliftover/) |
 
 
-Below is the diagram showcasing the data:
+Below is the diagram showcasing data processing:
 
 <img src="Data.png" width="50%">
 
