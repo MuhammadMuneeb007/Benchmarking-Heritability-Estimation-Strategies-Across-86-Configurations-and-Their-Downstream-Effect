@@ -111,7 +111,7 @@ Below is the diagram showcasing data processing:
 
 
 
-
+## Processed Data
 
 | Phenotype                                | PMID     | File Name                           | SNPs in GWAS (G) | SNPs in Genotype data (GE) | Common in G and GE | DOI                              | Cite            |
 |------------------------------------------|----------|-------------------------------------|------------------|----------------------------|--------------------|----------------------------------|-----------------|
