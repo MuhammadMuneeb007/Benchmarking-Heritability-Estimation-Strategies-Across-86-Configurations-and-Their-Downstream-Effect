@@ -27,10 +27,16 @@ In this research, we used various heritability tools and created multiple varian
 | Detect genomic build | Detect the genomic build of a dataset | [https://www.biostars.org/p/9495682/#9595219](https://www.biostars.org/p/9495682/#9595219) |
 | pyliftover | A Python package for genomic coordinate conversion | [https://pypi.org/project/pyliftover/](https://pypi.org/project/pyliftover/) |
 
+## Dataset
+
+We analyzed 14 phenotypes from the UK Biobank and downloaded the corresponding GWAS files from the GWAS catalog (https://www.ebi.ac.uk/gwas/). After converting the genotype data to match the GWAS file's genotype build, we calculated the number of common variants between the GWAS files and the genotype data. Three phenotypes were removed from further analysis due to a limited number of variants.
 
 Below is the diagram showcasing data processing:
 
 <img src="Data.png" width="50%">
+
+
+
 
 
 | Phenotype                                | PMID     | File Name                           | SNPs in GWAS (G) | SNPs in Genotype data (GE) | Common in G and GE | DOI                              | Cite            |
