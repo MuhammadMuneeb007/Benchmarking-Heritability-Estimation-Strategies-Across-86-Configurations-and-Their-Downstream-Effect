@@ -1,6 +1,6 @@
 ## Heritability tools
 
-There are multiple tools to calculate heritability, as shown in the table below. The statistical methods they used to calculate heritability vary for each tool. Moreover, the dataset they used to calculate the heritability varies as well. Some tools use the GWAS summary statistic file, some use the genotype data, covariates, and PCA, and some tools use the reference panels and SNPs tagging for calculating heritability.
+Multiple tools calculate heritability, as shown in the table below. Each tool uses different statistical methods to estimate heritability, and the datasets they use also vary. Some tools use the GWAS summary statistic file, some use genotype data, covariates, and PCA, and some use reference panels and SNP tagging.
 
 | Tool        | URL                                                        |
 |-------------|------------------------------------------------------------|
@@ -15,10 +15,10 @@ There are multiple tools to calculate heritability, as shown in the table below.
 
 ## Purpose of this documentation
 
-In this documentation, we used various heritability tools and created multiple variants of each method to calculate heritability for 11 phenotypes. Two polygenic risk scores (PRS) tools, LDpred-2 and GCTA, rely on heritability estimates for PRS calculation. We investigated whether the method used to calculate heritability impacts the performance of the PRS tools. Benchmarking all these tools is essential to identify the best method for heritability calculation that optimizes PRS calculation.
+In this research, we used various heritability tools and created multiple variants of each method to calculate heritability for 11 phenotypes. Two polygenic risk scores (PRS) tools, LDpred-2 and GCTA, rely on heritability estimates for PRS calculation. We investigated whether the method used to calculate heritability impacts the performance of the PRS tools. Benchmarking all these tools is essential to identify the best method for heritability calculation that optimizes PRS calculation.
 
 
-## Dataset
+## Helper tools
  
 
 | Tool | Description | Link |
