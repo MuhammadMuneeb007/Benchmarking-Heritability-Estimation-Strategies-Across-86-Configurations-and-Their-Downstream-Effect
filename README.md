@@ -364,6 +364,8 @@ See [Method2.md](Method2.md) for the detailed results
 
 ## Method 3
 
+[GEMMA](https://github.com/genetics-statistics/GEMMA/blob/master/doc/manual.pdf) employs various methods for calculating heritability. For details on these calculations, please refer to their manual.
+
 ```bash
 ./gemma --bfile BFILE -gk relatedmatrix -o output
 ./gemma --bfile train_data -gk 1 -o output
