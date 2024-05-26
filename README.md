@@ -303,4 +303,12 @@ For a fold 0, execute the specific method:
 python Method1.py body_mass_index_bmi 0
 ```
 
+See [Method1.md](Method1.md) for the detailed results
+
+![Method1Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/7b2a0481-d30f-4e1d-a40d-0ba18ad1017c)
+
+
+## Method 2
+
+
  
