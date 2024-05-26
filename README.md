@@ -40,7 +40,7 @@ We analyzed 14 phenotypes from the UK Biobank and downloaded the corresponding G
 2. **Transform the GWAS file to a specific format accepted by most PRS tools.** 
    - The sample transformation code for one phenotype (asthma) is shown below.
 
-#### Original GWAS file for asthma:
+### Original GWAS file for asthma:
 | chromosome | base_pair_location | effect_allele | other_allele | effect_allele_frequency | beta   | standard_error | p_value | variant_id |
 |------------|--------------------|---------------|--------------|-------------------------|--------|----------------|---------|------------|
 | 1          | 100000012          | T             | G            | 0.28029314035229        | 0.0055 | 0.0077         | 0.4756  | NA         |
@@ -49,7 +49,7 @@ We analyzed 14 phenotypes from the UK Biobank and downloaded the corresponding G
 | 1          | 100000374          | C             | G            | 0.000580831145737331    | 0.0204 | 0.2956         | 0.9451  | NA         |
 | 1          | 100000827          | T             | C            | 0.329735132840309       | 0.0016 | 0.0074         | 0.8236  | NA         |
 
-#### Transformation Code:
+### Transformation Code:
 ```python
 import pandas as pd
 
@@ -217,7 +217,7 @@ Perform quality controls on both the GWAS and the Genotype data, including:
 - Rely on heritability tools for SNP matching.
 
 
-```
+```bash
 python Step2-PerformQualityControls.py body_mass_index_bmi
 ```
 
@@ -281,8 +281,13 @@ Files after executing the above command.
 └── Step2-PerformQualityControls.py
 ```
 
+## Method 1
 
+Once the data is processed, we can calculate heritability using LDpred-2.
 
-
+For a fold 0, execute the specific method:
+```bash
+python Method1.py body_mass_index_bmi 0
+```
 
 
