@@ -53,11 +53,11 @@ def detect_genome_build(phenotype):
         return "38"
 
 # Check the detected genome build and copy the corresponding bim file to the phenotype directory
-#if detect_genome_build(phenotype) == "19":
-#    os.system("cp genotypes.bim19 " + phenotype + os.sep + phenotype + ".bim")
+if detect_genome_build(phenotype) == "19":
+    os.system("cp genotypes.bim19 " + phenotype + os.sep + phenotype + ".bim")
      
-#if detect_genome_build(phenotype) == "38":
-#    os.system("cp genotypes.bim38 " + phenotype + os.sep + phenotype + ".bim")
+if detect_genome_build(phenotype) == "38":
+    os.system("cp genotypes.bim38 " + phenotype + os.sep + phenotype + ".bim")
      
 #exit(0)
 
