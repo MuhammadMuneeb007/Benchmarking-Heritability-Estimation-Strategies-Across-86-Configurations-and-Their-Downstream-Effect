@@ -172,6 +172,7 @@ Files after executing the above command.
 .
 ├── body_mass_index_bmi
 │   ├── body_mass_index_bmi.bed
+│   ├── body_mass_index_bmi.bim
 │   ├── body_mass_index_bmi.cov
 │   ├── body_mass_index_bmi.covOLD
 │   ├── body_mass_index_bmi.fam
