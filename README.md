@@ -281,6 +281,19 @@ Files after executing the above command.
 └── Step2-PerformQualityControls.py
 ```
 
+For all methods, we considered the clumping and pruning parameters as shown below.
+
+| Parameter          | Value        |
+|--------------------|--------------|
+| clump_p1           | 1            |
+| clump_r2           | 0.1          |
+| clump_kb           | 200          |
+| p_window_size      | 200          |
+| p_slide_size       | 50           |
+| p_LD_threshold     | 0.25         |
+| numberofpca        | 6            |
+
+
 ## Method 1
 
 Once the data is processed, we can calculate heritability using LDpred-2.
