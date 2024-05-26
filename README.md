@@ -338,6 +338,18 @@ An alternative approach involves using a flag like `--grm-cutoff 0.025`, similar
 gcta --grm FILE --pheno FILE.PHENP --reml --grm-cutoff 0.025 --qcovar FILE.cov_pca --out FILE
 ```
 
+Summary result of REML analysis:
+
+| Source | Variance |   SE    |
+|--------|----------|---------|
+|  V(G)  | 0.869695 | 0.790524|
+|  V(e)  | 0.000001 | 0.787625|
+|   Vp   | 0.869696 | 0.063776|
+| V(G)/Vp| 0.999999 | 0.905632|
+
+h2 = V(G)/Vp
+
+
 Once the data is processed, we can calculate heritability using GCTA.
 
 For a fold 0, execute the specific method:
