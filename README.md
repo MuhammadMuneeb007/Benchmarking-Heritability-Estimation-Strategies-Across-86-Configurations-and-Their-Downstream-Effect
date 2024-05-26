@@ -137,9 +137,14 @@ Below is the diagram showcasing data processing:
 | osteoarthritis                           | 36411363 | GCST90134279_buildGRCh37.csv        | 24880768         | 619653                     | 619653             | 10.1038/s41588-022-01221-w       | McDonald2022    |
 
 
-## Perform quality controls on the data.
-The initial quality controls varies from dataset ot dataset and the way dataset is being stored processed and handled.
-after that execute the 
+## Perform Quality Controls on the Data
+
+The initial quality controls vary from dataset to dataset and depend on how the dataset is being stored, processed, and handled.  
+
+### Initial Directory Structure
+
+Before executing `Step1-MakeDirectories.py`, you should have the following directory structure:
+
 ```
 .
 ├── body_mass_index_bmi
@@ -153,6 +158,34 @@ after that execute the
 ├── phenotype_file.txt
 └── Step1-MakeDirectories.py
 ```
+ 
 
+Execute the command below. It will check build, and generate the files for a specific phenotype that includes covariate and bed bim and fam file. The code works for binary phenotype as well.
 
+```
+python Step1-MakeDirectories.py body_mass_index_bmi
+```
+
+Files after executing the above command.
+
+```
+.
+├── body_mass_index_bmi
+│   ├── body_mass_index_bmi.bed
+│   ├── body_mass_index_bmi.cov
+│   ├── body_mass_index_bmi.covOLD
+│   ├── body_mass_index_bmi.fam
+│   ├── body_mass_index_bmi.gz
+│   ├── body_mass_index_bmi.height
+│   ├── body_mass_index_bmi.heightOLD
+│   ├── GCST90018947_buildGRCh37.tsv.gz
+│   ├── gwas.csv.modified
+│   └── Output.py
+├── genotypes.bed
+├── genotypes.bim19
+├── genotypes.bim38
+├── genotypes.fam
+├── phenotype_file.txt
+└── Step1-MakeDirectories.py
+```
 
