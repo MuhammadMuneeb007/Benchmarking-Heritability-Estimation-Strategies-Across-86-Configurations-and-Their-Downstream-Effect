@@ -190,3 +190,99 @@ Files after executing the above command.
 └── Step1-MakeDirectories.py
 ```
 
+
+## Generating Multiple Folds and Performing Quality Controls
+
+- Match the SNPs between the GWAS and the `genotype.bim` file and update the RSID column.
+- For continuous phenotypes, employ normal cross-validation. For binary phenotypes, utilize stratified cross-validation with default train-test split, generating 5 folds.
+
+### Data Splitting and Organization
+Split the data and save it in directories as outlined below:
+
+1. **Continuous Phenotype:**
+   - Normal cross-validation (5 folds)
+   - Data saved in respective directories for each fold.
+
+2. **Binary Phenotype:**
+   - Stratified cross-validation (5 folds)
+   - Data saved in separate directories for each fold.
+
+### Quality Controls
+Perform quality controls on both the GWAS and the Genotype data, including:
+- Minor allele frequency adjustments
+- Duplicate SNP identification
+
+### SNP Matching
+- Use Module1.R to check common SNPs between the GWAS and the genotype data.
+- Rely on heritability tools for SNP matching.
+
+
+```
+python Step2-PerformQualityControls.py body_mass_index_bmi
+```
+
+Files after executing the above command.
+
+
+
+```
+.
+├── body_mass_index_bmi
+│   ├── body_mass_index_bmi.bed
+│   ├── body_mass_index_bmi.bim
+│   ├── body_mass_index_bmi.cov
+│   ├── body_mass_index_bmi.covOLD
+│   ├── body_mass_index_bmi.fam
+│   ├── body_mass_index_bmi.gz
+│   ├── body_mass_index_bmi.height
+│   ├── body_mass_index_bmi.heightOLD
+│   ├── body_mass_index_bmi_QC.bed
+│   ├── body_mass_index_bmi_QC.bim
+│   ├── body_mass_index_bmi_QC.cov
+│   ├── body_mass_index_bmi_QC.fam
+│   ├── body_mass_index_bmi_QC.log
+│   ├── Fold_0
+│   │   ├── test_data.bed
+│   │   ├── test_data.bim
+│   │   ├── test_data.cov
+│   │   ├── test_data.fam
+│   │   ├── test_data.log
+│   │   ├── train_data.a1
+│   │   ├── train_data.bed
+│   │   ├── train_data.bim
+│   │   ├── train_data.cov
+│   │   ├── train_data.fam
+│   │   ├── train_data.log
+│   │   ├── train_data.mismatch
+│   │   ├── train_data.QC.bed
+│   │   ├── train_data.QC.bim
+│   │   ├── train_data.QC.fam
+│   │   ├── train_data.QC.het
+│   │   ├── train_data.QC.log
+│   │   ├── train_data.QC.rel.id
+│   │   ├── train_data.QC.snplist
+│   │   └── train_data.valid.sample
+│   ├── Fold_1
+│   ├── Fold_2
+│   ├── Fold_3
+│   ├── Fold_4
+│   ├── GCST90018947_buildGRCh37.tsv.gz
+│   ├── gwas.csv.modified
+│   ├── Output.py
+│   └── PeopleWithPhenotype.txt
+├── genotypes.bed
+├── genotypes.bim19
+├── genotypes.bim38
+├── genotypes.fam
+├── Module1.R
+├── phenotype_file.txt
+├── plink
+├── Step1-MakeDirectories.py
+└── Step2-PerformQualityControls.py
+```
+
+
+
+
+
+
