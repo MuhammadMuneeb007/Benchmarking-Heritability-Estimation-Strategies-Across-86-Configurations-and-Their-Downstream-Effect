@@ -1,18 +1,21 @@
 These tables summarize various parameters and metrics related to clumping and pruning, as well as heritability estimates and model details for different scenarios.  
 
-- **clump_p1**: The proportion of SNPs to retain during clumping.
-- **clump_r2**: The LD threshold for clumping.
-- **clump_kb**: The physical distance threshold (in kilobases) for clumping.
-- **p_window_size**: The size of the sliding window used during pruning.
-- **p_slide_size**: The amount the sliding window moves during pruning.
-- **p_LD_threshold**: The LD threshold used during pruning.
-- **numberofpca**: The number of principal components used.
-- **h2**: The estimated heritability.
-- **numberofvariants**: The number of variants used in the analysis.
-- **h2model**: The model used for estimating heritability (e.g., LDpred-2_full, LDpred-2_hapmap).
-- **clumpprune**: Whether clumping and pruning were applied (yes/no).
+| Column            | Description                                                                                     |
+|-------------------|-------------------------------------------------------------------------------------------------|
+| clump_p1          | The proportion of SNPs to retain during clumping.                                               |
+| clump_r2          | The LD threshold for clumping.                                                                  |
+| clump_kb          | The physical distance threshold (in kilobases) for clumping.                                    |
+| p_window_size     | The size of the sliding window used during pruning.                                              |
+| p_slide_size      | The amount the sliding window moves during pruning.                                             |
+| p_LD_threshold    | The LD threshold used during pruning.                                                           |
+| numberofpca       | The number of principal components used.                                                        |
+| h2                | The estimated heritability.                                                                     |
+| numberofvariants  | The number of variants used in the analysis.                                                    |
+| h2model           | The model used for estimating heritability (e.g., LDpred-2_full, LDpred-2_hapmap).               |
+| clumpprune        | Whether clumping and pruning were applied (yes/no).                                             |
 
-- 
+
+
 Phenotype:  body_mass_index_bmi
 |    |   clump_p1 |   clump_r2 |   clump_kb |   p_window_size |   p_slide_size |   p_LD_threshold |   numberofpca |        h2 |   numberofvariants | h2model         | clumpprune   |
 |---:|-----------:|-----------:|-----------:|----------------:|---------------:|-----------------:|--------------:|----------:|-------------------:|:----------------|:-------------|
