@@ -380,6 +380,7 @@ See [Method3.md](Method3.md) for the detailed results
 ![Method3Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/84d3dd08-9543-474d-b2b5-4966bc73a497)
 
 
+## Method 4
 
 
 
