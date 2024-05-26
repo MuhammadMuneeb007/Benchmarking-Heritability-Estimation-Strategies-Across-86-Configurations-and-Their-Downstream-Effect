@@ -310,5 +310,46 @@ See [Method1.md](Method1.md) for the detailed results
 
 ## Method 2
 
+To calculate h2 using GCTA, we followed the [GCTA tutorial](https://yanglab.westlake.edu.cn/software/gcta/#Tutorial).
 
- 
+1. Using only genotype data and phenotype. The name in the code is `GCTA_genotype`.
+    - `gcta --bfile FILE  --make-grm --out FILE`
+    - `gcta --grm FILE --pheno FILE.PHENP --reml --out FILE`
+
+2. Using genotype data, covariates, and phenotype. The name in the code is `GCTA_genotype_covariate`.
+    - `gcta --bfile FILE  --make-grm --out FILE`
+    - `gcta --grm FILE --pheno FILE.PHENP  --qcovar  FILE.cov --reml --out FILE`
+
+3. Using genotype data, covariates, PCA, and phenotype. The name in the code is `GCTA_genotype_covariate_pca`.
+    - `gcta --bfile FILE  --make-grm --out FILE`
+    - `gcta --grm FILE --pheno FILE.PHENP --reml --qcovar  FILE.cov_pca --out FILE`
+
+OR
+
+    - `gcta --grm FILE --pheno FILE.PHENP --reml-no-constrain --qcovar  FILE.cov_pca --out FILE`
+
+**Handling REML Non-convergence:**
+
+In some cases, the REML calculation may not converge ([source](https://gcta.freeforums.net/thread/366/error-log-likelihood-converged)). To address this, the `--reml-no-constrain` flag can be used. However, it's important to note that in such cases, the heritability value might exceed 1, often attributed to sample relatedness ([source](https://www.researchgate.net/post/What_does_it_mean_when_heritability_is_larger_than_1#:~:text=1)%20Heritability%20can%20be%20greater,can%20also%20cause%20this%20result.)).
+
+An alternative approach involves using a flag like `--grm-cutoff 0.025`, similar to Plink's `--rel-cutoff 0.125`. This allows for the exclusion of specific samples, facilitating the recalculation of heritability.
+
+```bash
+gcta --grm FILE --pheno FILE.PHENP --reml --grm-cutoff 0.025 --qcovar FILE.cov_pca --out FILE
+```
+
+Once the data is processed, we can calculate heritability using GCTA.
+
+For a fold 0, execute the specific method:
+```bash
+python Method2.py body_mass_index_bmi 0
+```
+
+See [Method2.md](Method2.md) for the detailed results
+
+![Method2Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/f3535553-540c-4e15-b401-2dd9b1c5cf19)
+
+
+## Method 3
+
+
