@@ -139,17 +139,10 @@ Below is the diagram showcasing data processing:
 
 ## Perform quality controls on the data.
 The initial quality controls varies from dataset ot dataset and the way dataset is being stored processed and handled.
-We provided 
+after that execute the 
+```
 .
 ├── body_mass_index_bmi
-│   ├── body_mass_index_bmi.bed
-│   ├── body_mass_index_bmi.bim
-│   ├── body_mass_index_bmi.cov
-│   ├── body_mass_index_bmi.covOLD
-│   ├── body_mass_index_bmi.fam
-│   ├── body_mass_index_bmi.gz
-│   ├── body_mass_index_bmi.height
-│   ├── body_mass_index_bmi.heightOLD
 │   ├── GCST90018947_buildGRCh37.tsv.gz
 │   ├── gwas.csv.modified
 │   └── Output.py
@@ -159,7 +152,7 @@ We provided
 ├── genotypes.fam
 ├── phenotype_file.txt
 └── Step1-MakeDirectories.py
-
+```
 
 
 
