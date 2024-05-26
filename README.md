@@ -364,4 +364,23 @@ See [Method2.md](Method2.md) for the detailed results
 
 ## Method 3
 
+```bash
+./gemma --bfile BFILE -gk relatedmatrix -o output
+./gemma --bfile train_data -gk 1 -o output
+
+ 
+./gemma -p BFILE.fam -k output/output.cXX.txt -n 6 -vc model -o output
+./gemma -p train_data.fam -k output/output.cXX.txt -n 6 -vc 1 -o output
+```
+
+See [Method3.md](Method3.md) for the detailed results
+
+![Method3Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/84d3dd08-9543-474d-b2b5-4966bc73a497)
+
+
+
+
+
+
+
 
