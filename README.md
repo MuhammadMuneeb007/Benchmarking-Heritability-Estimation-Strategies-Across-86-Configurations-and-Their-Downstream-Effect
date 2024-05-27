@@ -377,7 +377,8 @@ See [Method2.md](Method2.md) for the detailed results
 
 See [Method3.md](Method3.md) for the detailed results
 
-![Method3Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/84d3dd08-9543-474d-b2b5-4966bc73a497)
+ ![Method3Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/48ff9c9c-15a5-47a8-909b-3e57e5994f7d)
+
 
 
 ## Method 4
@@ -390,7 +391,8 @@ See [Method3.md](Method3.md) for the detailed results
 
 See [Method4.md](Method4.md) for the detailed results
 
-![Method4Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/03815a8a-fa10-440e-a9f7-0447c43677ca)
+![Method4Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/4d244283-765f-4d07-97d5-b4ed16ab1562)
+
 
 
 ## Method 5
