@@ -172,8 +172,10 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     relatedmatrixname = ""
     if relatedmatrix=="1":
         relatedmatrixname = "centered"
+         
     else: 
         relatedmatrixname = "standardized"
+         
     
     h2modelname = ""
 
@@ -189,8 +191,8 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     else:
         BFILE = traindirec+os.sep+newtrainfilename
 
-    def readvariants():
-        file_path = "output"+os.sep+"output.log.txt"  
+    def readvariants(tempfile):
+        file_path = "output"+os.sep+tempfile+".log.txt" 
         with open(file_path, 'r') as file:
             for line in file:
                 if "## number of analyzed SNPs" in line:
@@ -198,8 +200,8 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
                     print("variants:", variants)
                     return variants
 
-    def readpve():
-        file_path = "output"+os.sep+"output.log.txt"  
+    def readpve(tempfile):
+        file_path = "output"+os.sep+tempfile+".log.txt" 
         with open(file_path, 'r') as file:
             for line in file:
                 if "pve estimates" in line:
@@ -207,20 +209,38 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
                     print("PVE Estimate:", pve_estimate)
                     return pve_estimate
 
+    try:
+        os.mkdir("output/"+filedirec)
+    except:
+        pass
+
+    try:
+        os.remove("output/"+traindirec+".sXX.txt")
+    except:
+        pass
+
+    try:
+        os.remove("output/"+traindirec+".cXX.txt")
+    except:
+        pass
+    try:
+        os.remove("output"+os.sep+traindirec+".log.txt" )
+    except:
+        pass
+
+
     if data == "genotype":
-         
         print("Processing genotype data")
 
         subprocess.call(["./gemma",
                         "-beta", filedirec + os.sep +filedirec+".txt",
                         "-bfile", BFILE,
                         "-vc", models,
-                        "-o", "output"])
+                        "-o", traindirec])
 
 
-        temppve =  readpve()             
-        print("PVE with only genotype data",readpve())
-        tempvariants = readvariants()
+        temppve =  readpve(traindirec)             
+        tempvariants = readvariants(traindirec)
 
     elif data == "genotype_covariate":
         subprocess.run([
@@ -229,12 +249,11 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
                 "-bfile", BFILE,
                 "-vc", models,
                 '-c', traindirec+os.sep+trainfilename+".covgemma",
-                '-o', 'output'
+                '-o', traindirec
             ])
     
-        temppve =  readpve()             
-        print("PVE with only genotype data",readpve())
-        tempvariants = readvariants()
+        temppve =  readpve(traindirec)             
+        tempvariants = readvariants(traindirec)
 
 
     elif data == "genotype_covariate_pca":
@@ -245,12 +264,11 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
                 "-bfile", BFILE,
                 "-vc", models,
                 '-c', traindirec+os.sep+trainfilename+".COV_PCAgemma",
-                '-o', 'output'
+                '-o', traindirec
             ])
 
-        temppve =  readpve()             
-        print("PVE with only genotype data",readpve())
-        tempvariants = readvariants()
+        temppve =  readpve(traindirec)             
+        tempvariants = readvariants(traindirec)
 
 
 
@@ -286,7 +304,7 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
 #-gk 1 calculates the centered relatedness matrix while “-gk 2” calculates the standardized relatedness matrix; “ 
 relatedmatrixs = ["1"]
 #”-vc 1” (default) uses HE regression and ”-vc 2” uses REML AI algorithm;
-h2models = ["1","2"]
+h2models = ["1"]
 datas = ["genotype","genotype_covariate","genotype_covariate_pca"]
 #datas = ["genotype_covariate","genotype_covariate_pca"]
 
