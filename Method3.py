@@ -159,12 +159,18 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
  
  
     relatedmatrixname = ""
+
     if relatedmatrix=="1":
         relatedmatrixname = "centered"
+        outputfilename = "output/"+traindirec+".cXX.txt"
     else: 
         relatedmatrixname = "standardized"
+        outputfilename = "output/"+traindirec+".sXX.txt"
     
     h2modelname = ""
+
+
+    
 
     if models=="1":
         h2modelname = "HE regression"
@@ -181,8 +187,8 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
         variants = len(pd.read_csv(BFILE+".bim"))
 
 
-    def readpve():
-        file_path = "output"+os.sep+"output.log.txt"  
+    def readpve(tempfile):
+        file_path = "output"+os.sep+tempfile+".log.txt" 
         with open(file_path, 'r') as file:
             for line in file:
                 if "pve estimates" in line:
@@ -190,76 +196,96 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
                     print("PVE Estimate:", pve_estimate)
                     return pve_estimate
 
+    def readvariants(tempfile):
+        file_path = "output"+os.sep+tempfile+".log.txt"  
+        with open(file_path, 'r') as file:
+            for line in file:
+                if "## number of analyzed SNPs" in line:
+                    variants = line.split("=")[-1].strip()
+                    print("variants:", variants)
+                    return variants
+            #exit(0)
+    try:
+        os.mkdir("output/"+filedirec)
+    except:
+        pass
+
+    try:
+        os.remove("output/"+traindirec+".sXX.txt")
+    except:
+        pass
+
+    try:
+        os.remove("output/"+traindirec+".cXX.txt")
+    except:
+        pass
+    try:
+        os.remove("output"+os.sep+traindirec+".log.txt" )
+    except:
+        pass
+    
+
     if data == "genotype":
          
         print("Processing genotype data")
         subprocess.run(["./gemma",
                 "--bfile", BFILE,
                 "-gk", relatedmatrix,
-                "-o", "output"])
+                "-o", traindirec])
  
-
+        tempvariants = readvariants(traindirec)        
+        print(BFILE)
         # Command 2: ./gemma -p train_data.fam -k output/output.cXX.txt -n 6 -vc 1 -o output
         subprocess.run(["./gemma",
                         "-p", BFILE+".fam",
-                        "-k", "output/output.cXX.txt",
+                        "-k", outputfilename,
                         "-n", "6",
                         "-vc", model,
-                        "-o", "output"])
- 
-        temppve =  readpve()             
-        print("PVE with only genotype data",readpve())
+                        "-o", traindirec])
+        temppve =  readpve(traindirec)  
 
 
     elif data == "genotype_covariate":
         subprocess.run(["./gemma",
                 "--bfile", BFILE,
                 "-gk", relatedmatrix,
-                "-o", "output"])      
-
+                "-o", traindirec])      
+                 
+ 
+        tempvariants = readvariants(traindirec)
         subprocess.run([
                 './gemma',
                 '-p', BFILE+".fam",
-                '-k', 'output/output.cXX.txt',
+                '-k', outputfilename,
                 '-n', '6',
                 '-vc', model,
                 '-c', traindirec+os.sep+trainfilename+".covgemma",
-                '-o', 'output'
+                '-o', traindirec
             ])
-        print(" ".join([
-                './gemma',
-                '-p', BFILE+".fam",
-                '-k', 'output/output.cXX.txt',
-                '-n', '6',
-                '-vc', model,
-                '-c', traindirec+os.sep+trainfilename+".covgemma",
-                '-o', 'output'
-            ]))
-        temppve =  readpve()             
-        print("PVE with only genotype data",readpve())
-
+ 
+        temppve =  readpve(traindirec)    
 
     elif data == "genotype_covariate_pca":
         subprocess.run(["./gemma",
                 "--bfile", BFILE,
                 "-gk", relatedmatrix,
-                "-o", "output"])         
-         
+                "-o", traindirec]) 
+                   
+ 
+        tempvariants = readvariants(traindirec)         
         subprocess.run([
                 './gemma',
                 '-p', BFILE+".fam",
-                '-k', 'output/output.cXX.txt',
+                '-k', outputfilename,
                 '-n', '6',
                 '-vc', model,
                 '-c', traindirec+os.sep+trainfilename+".COV_PCAgemma",
-                '-o', 'output'
+                '-o', traindirec
             ])
-
-        temppve =  readpve()             
-        print("PVE with only genotype data",readpve())
+        temppve =  readpve(traindirec)  
 
 
-
+    
 
     global prs_result 
     prs_result = prs_result._append({
@@ -273,7 +299,7 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
         "h2":temppve,
         "h2model":h2modelname+"_"+relatedmatrixname+"_"+data,
         "clumpprune":clumpprune,
-        "numberofvariants":variants,
+        "numberofvariants":tempvariants,
         "numberofpca":p,
         #"relatedmatrix":relatedmatrixname,
         #"data":data,
