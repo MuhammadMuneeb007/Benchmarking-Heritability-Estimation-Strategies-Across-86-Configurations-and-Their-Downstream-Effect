@@ -382,7 +382,18 @@ See [Method3.md](Method3.md) for the detailed results
 
 ## Method 4
 
+[GEMMA](https://github.com/genetics-statistics/GEMMA/blob/master/doc/manual.pdf) employs various methods for calculating heritability. For details on these calculations, please refer to their manual.
 
+```bash
+./gemma -beta GWAS.txt -bfile GENOTYPE -vc models -c COV.COV_PCAgemma -o output
+```
+
+See [Method4.md](Method4.md) for the detailed results
+
+![Method4Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/03815a8a-fa10-440e-a9f7-0447c43677ca)
+
+
+## Method 5
 
 
 
