@@ -462,13 +462,41 @@ See [Method9.md](Method9.md) for the detailed results
 ![Method9Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/d239b1d8-1e6a-4a16-a8a7-3c7923b6be61)
 
 
+## Method 10
+ 
+LDSC also provides a way to calculate the reference panel from the genotype data and then combine the genotype data and the GWAS file to calculate the heritability. Follow the [LDSC LD Score Estimation Tutorial](https://github.com/bulik/ldsc/wiki/LD-Score-Estimation-Tutorial) for detailed instructions.
+
+1. **Create Binary Fileset for Each Chromosome Using PLINK**
+
+    ```bash
+    ./plink --bfile BFILE --chr chr_num --make-bed --out BFILE_chr_num
+    ```
+   - **Command**: `./plink --bfile BFILE --chr chr_num --make-bed --out BFILE_chr_num`
+   - **Description**: This command uses PLINK to create a binary fileset (`.bed`, `.bim`, `.fam`) for a specific chromosome (`chr_num`) from the base file (`BFILE`). The output is saved with a suffix indicating the chromosome number.
+  
+     
+2. **Calculate LD Scores Using LDSC**
+
+    ```bash
+    python ldsc.py --bfile BFILE_chr_num --l2 --yes-really --ld-wind-cm 1 --out LDSCFILES/chr_num
+    ```
+   - **Command**: `python ldsc.py --bfile BFILE_chr_num --l2 --yes-really --ld-wind-cm 1 --out LDSCFILES/chr_num`
+   - **Description**: This command runs LDSC to calculate LD scores for the chromosome-specific binary fileset created by PLINK. It uses a window size of 1 centimorgan and outputs the results to the specified directory (`LDSCFILES/chr_num`).
+  
+     
+3. **Estimate Heritability Using LDSC**
+
+    ```bash
+    python ldsc.py --h2 GWAS --ref-ld-chr LDSCFILES/ --w-ld-chr LDSCFILES/ --out OUT
+    ```
+   - **Command**: `python ldsc.py --h2 GWAS --ref-ld-chr LDSCFILES/ --w-ld-chr LDSCFILES/ --out OUT`
+   - **Description**: This command estimates heritability using the specified GWAS summary statistics file (`GWAS`). It uses reference LD scores and weights from the specified directories (`LDSCFILES/`) and outputs the results to the specified directory (`OUT`).
+     
 
 
+See [Method10.md](Method10.md) for the detailed results
 
-
-
-
-
+![Method10Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/3c066970-0b1e-4359-9c28-e19cfeed54af)
 
 
 
