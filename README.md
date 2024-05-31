@@ -422,6 +422,11 @@ In this method, we used [DPR](https://github.com/biostatpzeng/DPR) + [GEMMA](htt
 ./gemma -p BFILE.fam -k OUT -n 6 -vc model -c COV_PCAgemma -o OUT2
 ```
 
+See [Method6.md](Method6.md) for the detailed results
+
+![Method6Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/4dfd7457-2ffd-4c94-a0f4-ed5d2ed71722)
+
+
 ## Method 7
 
 LDSC provides a simple way to calculate heritability using the GWAS file. Follow their [tutorial](https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation) for detailed calculation.
