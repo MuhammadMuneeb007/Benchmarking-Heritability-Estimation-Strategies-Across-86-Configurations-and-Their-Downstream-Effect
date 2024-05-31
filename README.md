@@ -398,5 +398,32 @@ See [Method4.md](Method4.md) for the detailed results
 ## Method 5
 
 
+## Method 6
+
+
+## Method 7
+
+
+## Method 8
+
+
+
+## Method 9
+
+```
+./ldak --sum-hers OUTPUT_FILENAME --summary GWAS --tagfile your_precomputed_file --check-sums NO
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
