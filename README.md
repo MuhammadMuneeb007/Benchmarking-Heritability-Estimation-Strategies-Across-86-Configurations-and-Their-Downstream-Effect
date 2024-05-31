@@ -403,6 +403,23 @@ See [Method4.md](Method4.md) for the detailed results
 
 ## Method 7
 
+LDSC provides a simple way to calculate heritability using the GWAS file. Follow their [tutorial](https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation) for detailed calculation.
+
+- [LDSC Heritability and Genetic Correlation](https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
+
+### Important Files:
+- **ref-ld-chr**: Reference file ([eur_ref_ld_chr.tar.bz2](https://console.cloud.google.com/storage/browser/_details/broad-alkesgroup-public-requester-pays/LDSCORE/eur_ref_ld_chr.tar.bz2?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))))
+- **w-ld-chr**: Regression weights ([eur_w_ld_chr.tar.bz2](https://console.cloud.google.com/storage/browser/_details/broad-alkesgroup-public-requester-pays/LDSCORE/eur_w_ld_chr.tar.bz2?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))))
+- **w_hm3.snplist**: SNP list file ([w_hm3.snplist.bz2](https://console.cloud.google.com/storage/browser/_details/broad-alkesgroup-public-requester-pays/LDSCORE/w_hm3.snplist.bz2?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))))
+
+```
+python ldsc.py --h2 GWAS --ref-ld-chr REF --w-ld-chr WEIGHT --out OUT
+```
+
+See [Method7.md](Method7.md) for the detailed results
+
+![Method7Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/0fcbe785-0613-47b0-8537-ad4b95cf593d)
+
 
 ## Method 8
 
