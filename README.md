@@ -1,4 +1,4 @@
-## Heritability tools
+![Method9Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/13c6d2c2-4e31-47d8-bf10-f384354c986b)## Heritability tools
 
 Multiple tools calculate heritability, as shown in the table below. Each tool uses different statistical methods to estimate heritability, and the datasets they use also vary. Some tools use the GWAS summary statistic file, some use genotype data, covariates, and PCA, and some use reference panels and SNP tagging.
 
@@ -406,7 +406,7 @@ See [Method4.md](Method4.md) for the detailed results
 
 ## Method 8
 
-# LDAK
+### LDAK 
 
 [LDAK](https://dougspeed.com/snp-heritability/) calculates heritability using SNP tagging. Heritability using LDAK can be calculated using the precomputed taggings and by calculating SNPs tagging from the genotype data.
 
