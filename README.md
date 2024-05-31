@@ -397,9 +397,30 @@ See [Method4.md](Method4.md) for the detailed results
 
 ## Method 5
 
+In this method, we first used the genotype data and performed LD score regression analysis, and that file was further used by Gemma for calculating heritability. The LDSC parameters can be changed.
+
+## Commands
+
+```bash
+python ldsc.py --bfile BFILE --yes-really --l2 --ld-wind-cm 1 --out traindirec/ld
+./gemma -beta GWAS -bfile BFILE -wcat traindirec/ld -vc 2 -o OUT
+```
+
+See [Method5.md](Method5.md) for the detailed results
+
+
 
 ## Method 6
 
+ 
+
+In this method, we used [DPR](https://github.com/biostatpzeng/DPR) + [GEMMA](https://github.com/genetics-statistics/GEMMA). First, we used DPR to calculate the related matrix that is centered and standardized from DPR. The heritability is estimated using the HE regression or REML AI algorithm. The data can include genotype only, genotype with covariates, or genotype with covariates and PCA.
+ 
+
+```bash
+./DPR --bfile BFILE -gk 1 or 2 -o OUT
+./gemma -p BFILE.fam -k OUT -n 6 -vc model -c COV_PCAgemma -o OUT2
+```
 
 ## Method 7
 
