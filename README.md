@@ -406,15 +406,43 @@ See [Method4.md](Method4.md) for the detailed results
 
 ## Method 8
 
+# LDAK
+
+[LDAK](https://dougspeed.com/snp-heritability/) calculates heritability using SNP tagging. Heritability using LDAK can be calculated using the precomputed taggings and by calculating SNPs tagging from the genotype data.
+
+LDAK provides four different models to calculate taggings: ["human", "GCTA", "BLD-LDAK", "alpha"](https://dougspeed.com/calculate-taggings/). These taggings are then combined with the GWAS file to calculate heritability. The tutorial they provided is pretty good and provides a detailed explanation for each step.
+
+
+```
+./ldak --calc-tagging TAGGING --bfile GENOTYPE --power -.25
+```
+
+```
+./ldak --sum-hers OUTPUT_FILENAME --summary GWAS --tagfile TAGGING --check-sums NO
+```
+
 
 
 ## Method 9
+
+LDAK also provides [precomputed taggings](https://dougspeed.com/pre-computed-tagging-files/) which were calculated from the UK Biobank data. They also provided taggings for different populations, which were generated using different data sources from different models.
+
+### Tagging Files
+
+- bld.ldak.hapmap.gbr.tagging
+- ldak.thin.hapmap.gbr.tagging
+- bld.ldak.lite.alpha.hapmap.gbr.tagging
+- bld.ldak.genotyped.gbr.tagging
+- ldak.thin.genotyped.gbr.tagging
+- bld.ldak.lite.alpha.genotyped.gbr.tagging
 
 ```
 ./ldak --sum-hers OUTPUT_FILENAME --summary GWAS --tagfile your_precomputed_file --check-sums NO
 ```
 
+See [Method9.md](Method9.md) for the detailed results
 
+![Method9Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/d239b1d8-1e6a-4a16-a8a7-3c7923b6be61)
 
 
 
