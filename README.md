@@ -1,4 +1,4 @@
-![Method9Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/13c6d2c2-4e31-47d8-bf10-f384354c986b)## Heritability tools
+## Heritability tools
 
 Multiple tools calculate heritability, as shown in the table below. Each tool uses different statistical methods to estimate heritability, and the datasets they use also vary. Some tools use the GWAS summary statistic file, some use genotype data, covariates, and PCA, and some use reference panels and SNP tagging.
 
