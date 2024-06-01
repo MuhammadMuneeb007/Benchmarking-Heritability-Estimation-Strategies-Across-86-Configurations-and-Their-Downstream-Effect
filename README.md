@@ -13,6 +13,43 @@ Multiple tools calculate heritability, as shown in the table below. Each tool us
 
 
 
+| Index    | Tool            | Models                                                                                                                  | GWAS | Genotype data | Covariates | Reference Panel                   | Clumping and Pruning | Models |
+|----------|-----------------|--------------------------------------------------------------------------------------------------------------------------|------|---------------|------------|-----------------------------------|----------------------|--------|
+| Method 1 | LDpred-2        | LDpred-2_full                                                                                                            | Yes  | Yes           | No         | No                                | Yes/No               | 4      |
+|          |                 | LDpred-2_hapmap                                                                                                          | Yes  | Yes           | No         | No                                | Yes/No               |        |
+| Method 2 | GCTA            | (Data) Genotype                                                                                                          | No   | Yes           | Yes        | No                                | Yes/No               | 6      |
+|          |                 | Genotype+Covariate                                                                                                       | No   | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | Genotype+Covariate+PCA                                                                                                   | No   | Yes           | Yes        | No                                | Yes/No               |        |
+| Method 3 | GEMMA           | (Related Matrix) Centered/ Standardized                                                                                  | No   | Yes           | Yes        | No                                | Yes/No               | 24     |
+|          |                 | (Heritability Algorithm) HE regression                                                                                   | No   | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | REML AI algorithm                                                                                                        | No   | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | (Data) Genotype                                                                                                          | No   | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | Genotype+Covariate                                                                                                       | No   | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | Genotype+Covariate+PCA                                                                                                   | No   | Yes           | Yes        | No                                | Yes/No               |        |
+| Method 4 | GEMMA           | (Heritability Algorithm) HE regression                                                                                   | Yes  | Yes           | Yes        | No                                | Yes/No               | 6      |
+|          |                 | (Data) Genotype                                                                                                          | Yes  | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | Genotype+Covariate                                                                                                       | Yes  | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | Genotype+Covariate+PCA                                                                                                   | Yes  | Yes           | Yes        | No                                | Yes/No               |        |
+| Method 5 | LDSC+GEMMA      | (Heritability Algorithm) REML AI algorithm                                                                               | Yes  | Yes           | Yes        | LD Score of Genotype data         | Yes                  | 3      |
+|          |                 | (Data) Genotype                                                                                                          | Yes  | Yes           | Yes        | LD Score of Genotype data         | Yes                  |        |
+|          |                 | Genotype+Covariate                                                                                                       | Yes  | Yes           | Yes        | LD Score of Genotype data         | Yes                  |        |
+|          |                 | Genotype+Covariate+PCA                                                                                                   | Yes  | Yes           | Yes        | LD Score of Genotype data         | Yes                  |        |
+| Method 6 | DPR+GEMMA       | (Related Matrix) Centered/ Standardized - from DPR                                                                       | No   | Yes           | Yes        | No                                | Yes/No               | 24     |
+|          |                 | (Heritability Algorithm) HE regression                                                                                   | No   | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | REML AI algorithm                                                                                                        | No   | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | (Data) Genotype                                                                                                          | No   | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | Genotype+Covariate                                                                                                       | No   | Yes           | Yes        | No                                | Yes/No               |        |
+|          |                 | Genotype+Covariate+PCA                                                                                                   | No   | Yes           | Yes        | No                                | Yes/No               |        |
+| Method 7 | LDSC            | LDSC (EUR reference panel, EUR weights)                                                                                  | Yes  | No            | No         | EUR reference panel EUR weights   | No                   | 4      |
+| Method 8 | LDAK-Calculate  | LDAK Tagging Models (Human, GCTA, BLD-LDAK, Alpha)                                                                       | Yes  | Yes           | No         | No                                | Yes/No               | 8      |
+| Method 9 | LDAK-Precomputed| Precomputed taggings (bld.ldak.hapmap.gbr.tagging ldak.thin.hapmap.gbr.tagging bld.ldak.lite.alpha.hapmap.gbr.tagging)    | Yes  | No            | No         | No                                | No                   | 6      |
+|          |                 | bld.ldak.genotyped.gbr.tagging                                                                                           | Yes  | No            | No         | No                                | No                   |        |
+|          |                 | ldak.thin.genotyped.gbr.tagging                                                                                          | Yes  | No            | No         | No                                | No                   |        |
+|          |                 | bld.ldak.lite.alpha.genotyped.gbr.tagging                                                                                | Yes  | No            | No         | No                                | No                   |        |
+| Method 10| LDSC            | LDSC (Reference panel, EUR weights from Genotype data)                                                                  | Yes  | Yes           | No         | LD Score of Genotype data         | Yes                  | 1      |
+
+
+
 ## Purpose of this documentation
 
 In this research, we used various heritability tools and created multiple variants of each method to calculate heritability for 11 phenotypes. Two polygenic risk scores (PRS) tools, LDpred-2 and GCTA, rely on heritability estimates for PRS calculation. We investigated whether the method used to calculate heritability impacts the performance of the PRS tools. Benchmarking all these tools is essential to identify the best method for heritability calculation that optimizes PRS calculation.
@@ -408,6 +445,7 @@ python ldsc.py --bfile BFILE --yes-really --l2 --ld-wind-cm 1 --out traindirec/l
 
 See [Method5.md](Method5.md) for the detailed results
 
+![Method5Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/d4ea4aad-9fb2-4342-b9fe-69be75c8bd08)
 
 
 ## Method 6
@@ -464,6 +502,9 @@ LDAK provides four different models to calculate taggings: ["human", "GCTA", "BL
 ./ldak --sum-hers OUTPUT_FILENAME --summary GWAS --tagfile TAGGING --check-sums NO
 ```
 
+See [Method8.md](Method8.md) for the detailed results
+
+![Method8Plot1](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/3362a180-667d-47e7-8e72-ca2457479c30)
 
 
 ## Method 9
