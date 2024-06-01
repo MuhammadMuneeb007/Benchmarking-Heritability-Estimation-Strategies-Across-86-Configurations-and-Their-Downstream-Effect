@@ -61,7 +61,7 @@ This table presents a comparison of different methods used to calculate heritabi
 
 ## Result of heritability calculation for all 10 Phenotypes and 86 unique Methods. 
 
-![Allheritabitlity](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/2381e0ee-dd1b-4ed6-ad42-7eea9b918885)
+![Result2](https://github.com/MuhammadMuneeb007/heritability/assets/47159080/14228d5d-5fa0-445d-a216-949117c862d5)
 
 
 
