@@ -1,4 +1,4 @@
- 
+
 import os
 import sys
 import pandas as pd
@@ -13,17 +13,17 @@ import pandas as pd
 if "BETA" in df.columns.to_list():
     df = df[['CHR', 'BP', 'SNP', 'A1', 'A2', 'N', 'SE', 'P', 'BETA', 'INFO', 'MAF']]
     df['Z'] = df['BETA'] / df['SE']
-    df = df[['SNP','N','Z','A1', 'A2']]
+    #df = df[['SNP','N','Z','A1', 'A2']]
 
 
 else:
     df["BETA"] = np.log(df["OR"])
     df = df[['CHR', 'BP', 'SNP', 'A1', 'A2', 'N', 'SE', 'P', 'BETA', 'INFO', 'MAF']]
     df['Z'] = df['BETA'] / df['SE']
-    df = df[['SNP','N','Z','A1', 'A2']]
+    #df = df[['SNP','N','Z','A1', 'A2']]
 
+df.to_csv(filedirec + os.sep +filedirec+".ldsc.txt",sep="\t",index=False)
 
-df.to_csv(filedirec + os.sep +filedirec+".gemma.txt",sep="\t",index=False)
  
 
 from operator import index
@@ -68,9 +68,6 @@ clump_kb = [200]  # List containing clump parameter 'kb'
 p_window_size = [200]  # List containing pruning parameter 'window_size'
 p_slide_size = [50]  # List containing pruning parameter 'slide_size'
 p_LD_threshold = [0.25]  # List containing pruning parameter 'LD_threshold'
-
-# Kindly note that the number of p-values to be considered varies, and the actual p-value depends on the dataset as well.
-# We will specify the range list here.
  
 
 # Initializing an empty DataFrame with specified column names
@@ -78,7 +75,7 @@ prs_result = pd.DataFrame(columns=["clump_p1", "clump_r2", "clump_kb", "p_window
                                 "numberofpca","h2model","h2","numberofvariants","clumpprune","relatedmatrix","data"])
 
  
-def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relatedmatrix,data,p1_val, p2_val, p3_val, c1_val, c2_val, c3_val,Name):
+def transform_gemma_data(traindirec, newtrainfilename,p, clumpprune,p1_val, p2_val, p3_val, c1_val, c2_val, c3_val,Name):
 
     ### First perform clumping on the file and save the clumpled file.
     
@@ -168,150 +165,107 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     covandpcs_train.to_csv(traindirec+os.sep+trainfilename+".COV_PCA",sep="\t",index=False)
     covandpcs_train.iloc[:, 2:].to_csv(traindirec+os.sep+trainfilename+".COV_PCAgemma", header=False, index=False,sep="\t")
  
- 
-    relatedmatrixname = ""
-    if relatedmatrix=="1":
-        relatedmatrixname = "centered"
-         
-    else: 
-        relatedmatrixname = "standardized"
-         
-    
-    h2modelname = ""
-
-    if models=="1":
-        h2modelname = "HE regression"
-    else: 
-        h2modelname = "REML AI algorithm"
-
-    temppve = ""
+  
 
     if clumpprune=="yes":
         BFILE = traindirec+os.sep+newtrainfilename+".clumped.pruned"
     else:
         BFILE = traindirec+os.sep+newtrainfilename
+ 
 
-    def readvariants(tempfile):
-        file_path = "output"+os.sep+tempfile+".log.txt" 
+    def readpve(file): 
+        file_path = file
         with open(file_path, 'r') as file:
             for line in file:
-                if "## number of analyzed SNPs" in line:
-                    variants = line.split("=")[-1].strip()
-                    print("variants:", variants)
-                    return variants
-
-    def readpve(tempfile):
-        file_path = "output"+os.sep+tempfile+".log.txt" 
-        with open(file_path, 'r') as file:
-            for line in file:
-                if "pve estimates" in line:
-                    pve_estimate = line.split("=")[-1].strip()
+                if "Total Observed scale h2" in line:
+                    pve_estimate = line.split(":")[-1].split(" ")[1]
                     print("PVE Estimate:", pve_estimate)
                     return pve_estimate
 
+    def readvariants(file): 
+        file_path = file
+        with open(file_path, 'r') as file:
+            for line in file:
+                if "After merging with regression SNP LD" in line:
+                    pve_estimate = line.split(",")[-1].strip().split(" ")[0]
+                    print("Variants:", pve_estimate)
+                    return pve_estimate
     try:
-        os.mkdir("output/"+filedirec)
+        os.mkdir("LDSCFILES/"+filedirec)
     except:
-        pass
+        pass    
 
-    try:
-        os.remove("output/"+traindirec+".sXX.txt")
-    except:
-        pass
-
-    try:
-        os.remove("output/"+traindirec+".cXX.txt")
-    except:
-        pass
-    try:
-        os.remove("output"+os.sep+traindirec+".log.txt" )
-    except:
-        pass
-
-
-    if data == "genotype":
-        print("Processing genotype data")
-
-        subprocess.call(["./gemma",
-                        "-beta", filedirec + os.sep +filedirec+".gemma.txt",
-                        "-bfile", BFILE,
-                        "-vc", models,
-                        "-o", traindirec])
-
-
-        temppve =  readpve(traindirec)             
-        tempvariants = readvariants(traindirec)
-
-    elif data == "genotype_covariate":
-        subprocess.run([
-                './gemma',
-                "-beta", filedirec + os.sep +filedirec+".gemma.txt",
-                "-bfile", BFILE,
-                "-vc", models,
-                '-c', traindirec+os.sep+trainfilename+".covgemma",
-                '-o', traindirec
-            ])
     
-        temppve =  readpve(traindirec)             
-        tempvariants = readvariants(traindirec)
-
-
-    elif data == "genotype_covariate_pca":
-
-        subprocess.run([
-                './gemma',
-                "-beta", filedirec + os.sep +filedirec+".gemma.txt",
-                "-bfile", BFILE,
-                "-vc", models,
-                '-c', traindirec+os.sep+trainfilename+".COV_PCAgemma",
-                '-o', traindirec
-            ])
-
-        temppve =  readpve(traindirec)             
-        tempvariants = readvariants(traindirec)
-
-
-
-
-
-    global prs_result 
-    prs_result = prs_result._append({
-        "clump_p1": c1_val,
-        "clump_r2": c2_val,
-        "clump_kb": c3_val,
-        "p_window_size": p1_val,
-        "p_slide_size": p2_val,
-        "p_LD_threshold": p3_val,
-
-        "h2":temppve,
-        "h2model":h2modelname+"_"+data,
-        "clumpprune":clumpprune,
-        "numberofvariants":tempvariants,
-        "numberofpca":p,
-        
-  
-        #"relatedmatrix":relatedmatrixname,
-        #"data":data,
-         
-    }, ignore_index=True)
-
-    prs_result.to_csv(traindirec+os.sep+Name+os.sep+"Results.csv",index=False)
+    try:
+        os.mkdir("LDSCFILES/"+traindirec)
+    except:
+        pass    
     
+
+
+    chromosomes = range(1, 23)   
+ 
+    for chr_num in chromosomes:
+        command = [
+            "./plink",
+            "--bfile", BFILE,
+            "--chr", str(chr_num),
+            "--make-bed",
+            "--out", BFILE+"_"+str(chr_num)
+        ]
+        command_str = ' '.join(command)
+        subprocess.call(command_str, shell=True)
+
+        command = [
+            "python", "ldsc.py",
+            "--bfile", BFILE+"_"+str(chr_num),
+            "--l2",
+            "--yes-really",
+            "--ld-wind-cm", "1",
+            "--out", "LDSCFILES"+os.sep+traindirec+os.sep+str(chr_num)
+        ]
+        command_str = ' '.join(command)
+        subprocess.call(command_str, shell=True)
+    
+    command = [
+        "python ldsc.py",
+        "--h2", filedirec + os.sep +filedirec+".ldsc.txt",
+        "--ref-ld-chr", "LDSCFILES"+os.sep+traindirec+"/",
+        "--w-ld-chr", "LDSCFILES"+os.sep+traindirec+"/",
+        "--out", "LDSC"+os.sep+filedirec
+    ]
+    
+    subprocess.call(" ".join(command), shell=True)
+    h2 = readpve("LDSC"+os.sep+filedirec+".log")
+    variants = readvariants("LDSC"+os.sep+filedirec+".log")
+
+    global prs_result
+
+    prs_result = prs_result.append({
+            "clump_p1": c1_val,
+            "clump_r2": c2_val,
+            "clump_kb": c3_val,
+            "p_window_size": p1_val,
+            "p_slide_size": p2_val,
+            "p_LD_threshold": p3_val,
+            "h2":h2,
+            "h2model":"LDSC"+"_"+"Genotype_Reference",
+            "clumpprune":clumpprune,
+            "numberofvariants":variants,
+            "numberofpca":"-"
+            }, ignore_index=True)
+
+    prs_result.to_csv(traindirec+os.sep+Name+os.sep+"Results.csv")
+ 
  
     return
 
  
-#-gk 1 calculates the centered relatedness matrix while “-gk 2” calculates the standardized relatedness matrix; “ 
-relatedmatrixs = ["1"]
-#”-vc 1” (default) uses HE regression and ”-vc 2” uses REML AI algorithm;
-h2models = ["1"]
-datas = ["genotype","genotype_covariate","genotype_covariate_pca"]
-#datas = ["genotype_covariate","genotype_covariate_pca"]
-
 clumpprunes = ["yes","no"]
-# Nested loops to iterate over different parameter values
-create_directory(folddirec+os.sep+"Gemma2-Heritability")
+clumpprunes = ["yes"]
 
+# Nested loops to iterate over different parameter values
+create_directory(folddirec+os.sep+"LDSC-Genotype-Heritability")
 for p1_val in p_window_size:
  for p2_val in p_slide_size: 
   for p3_val in p_LD_threshold:
@@ -319,11 +273,8 @@ for p1_val in p_window_size:
     for c2_val in clump_r2:
      for c3_val in clump_kb:
       for p in numberofpca:
-       for model in  h2models:
         for clumpprune in clumpprunes:
-         for relatedmatrix in relatedmatrixs:
-          for data  in datas:
-            transform_gemma_data(folddirec, newtrainfilename,model, p, clumpprune,relatedmatrix,data,str(p1_val), str(p2_val), str(p3_val), str(c1_val), str(c2_val), str(c3_val), "Gemma2-Heritability")
+            transform_gemma_data(folddirec, newtrainfilename, p, clumpprune,str(p1_val), str(p2_val), str(p3_val), str(c1_val), str(c2_val), str(c3_val), "LDSC-Genotype-Heritability")
             #exit(0)
 exit(0)
 

@@ -1,4 +1,6 @@
  
+ 
+
 import os
 import sys
 import pandas as pd
@@ -10,11 +12,11 @@ GWAS = filedirec + os.sep + filedirec+".gz"
 df = pd.read_csv(GWAS,compression= "gzip",sep="\s+")
 
 import pandas as pd
+
 if "BETA" in df.columns.to_list():
     df = df[['CHR', 'BP', 'SNP', 'A1', 'A2', 'N', 'SE', 'P', 'BETA', 'INFO', 'MAF']]
     df['Z'] = df['BETA'] / df['SE']
     df = df[['SNP','N','Z','A1', 'A2']]
-
 
 else:
     df["BETA"] = np.log(df["OR"])
@@ -25,6 +27,7 @@ else:
 
 df.to_csv(filedirec + os.sep +filedirec+".gemma.txt",sep="\t",index=False)
  
+
 
 from operator import index
 import pandas as pd
@@ -68,9 +71,6 @@ clump_kb = [200]  # List containing clump parameter 'kb'
 p_window_size = [200]  # List containing pruning parameter 'window_size'
 p_slide_size = [50]  # List containing pruning parameter 'slide_size'
 p_LD_threshold = [0.25]  # List containing pruning parameter 'LD_threshold'
-
-# Kindly note that the number of p-values to be considered varies, and the actual p-value depends on the dataset as well.
-# We will specify the range list here.
  
 
 # Initializing an empty DataFrame with specified column names
@@ -172,10 +172,8 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     relatedmatrixname = ""
     if relatedmatrix=="1":
         relatedmatrixname = "centered"
-         
     else: 
         relatedmatrixname = "standardized"
-         
     
     h2modelname = ""
 
@@ -208,11 +206,36 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
                     pve_estimate = line.split("=")[-1].strip()
                     print("PVE Estimate:", pve_estimate)
                     return pve_estimate
+    
 
+
+    # First calculate the Linkage disequilibrium and it will generate ld.l2.ldscore.gz file.
+
+    # Define the ldsc command
+    
+    ldscfile = traindirec+os.sep+'ld.l2.ldscore.gz'
+    
+    try:
+        os.remove(traindirec+os.sep+'ld.l2.ldscore.gz')
+        pass
+    except:
+        pass
+
+    ldsc_command = [
+        'python', 'ldsc.py',
+        '--bfile', BFILE,
+        '--yes-really',
+        '--l2',
+        '--ld-wind-cm', '1',
+        '--out', traindirec+os.sep+'ld'
+    ]
+    
+    # Call the ldsc command using subprocess
+    subprocess.call(ldsc_command)
     try:
         os.mkdir("output/"+filedirec)
     except:
-        pass
+        pass    
 
     try:
         os.remove("output/"+traindirec+".sXX.txt")
@@ -228,43 +251,45 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     except:
         pass
 
-
+    
     if data == "genotype":
         print("Processing genotype data")
-
         subprocess.call(["./gemma",
                         "-beta", filedirec + os.sep +filedirec+".gemma.txt",
                         "-bfile", BFILE,
-                        "-vc", models,
+                        "-wcat",ldscfile,
+                        "-vc", "2",
                         "-o", traindirec])
 
-
-        temppve =  readpve(traindirec)             
+        temppve =  readpve(traindirec)   
         tempvariants = readvariants(traindirec)
 
     elif data == "genotype_covariate":
-        subprocess.run([
+           
+
+        subprocess.call([
                 './gemma',
                 "-beta", filedirec + os.sep +filedirec+".gemma.txt",
                 "-bfile", BFILE,
-                "-vc", models,
+                "-wcat",ldscfile,
+                "-vc", "2",
                 '-c', traindirec+os.sep+trainfilename+".covgemma",
                 '-o', traindirec
             ])
     
         temppve =  readpve(traindirec)             
+ 
         tempvariants = readvariants(traindirec)
-
-
+ 
     elif data == "genotype_covariate_pca":
-
-        subprocess.run([
+        subprocess.call([
                 './gemma',
                 "-beta", filedirec + os.sep +filedirec+".gemma.txt",
                 "-bfile", BFILE,
-                "-vc", models,
+                "-wcat",ldscfile,
+                "-vc", "2",
                 '-c', traindirec+os.sep+trainfilename+".COV_PCAgemma",
-                '-o', traindirec
+                '-o',traindirec
             ])
 
         temppve =  readpve(traindirec)             
@@ -273,9 +298,8 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
 
 
 
-
     global prs_result 
-    prs_result = prs_result._append({
+    prs_result = prs_result.append({
         "clump_p1": c1_val,
         "clump_r2": c2_val,
         "clump_kb": c3_val,
@@ -284,14 +308,11 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
         "p_LD_threshold": p3_val,
 
         "h2":temppve,
+
         "h2model":h2modelname+"_"+data,
         "clumpprune":clumpprune,
         "numberofvariants":tempvariants,
         "numberofpca":p,
-        
-  
-        #"relatedmatrix":relatedmatrixname,
-        #"data":data,
          
     }, ignore_index=True)
 
@@ -301,17 +322,18 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     return
 
  
-#-gk 1 calculates the centered relatedness matrix while “-gk 2” calculates the standardized relatedness matrix; “ 
+#-gk 1 calculates the centered relatedness matrix while  -gk 2  calculates the standardized relatedness matrix;   
 relatedmatrixs = ["1"]
-#”-vc 1” (default) uses HE regression and ”-vc 2” uses REML AI algorithm;
-h2models = ["1"]
+# -vc 1  (default) uses HE regression and  -vc 2  uses REML AI algorithm;
+h2models = ["2"]
 datas = ["genotype","genotype_covariate","genotype_covariate_pca"]
 #datas = ["genotype_covariate","genotype_covariate_pca"]
 
 clumpprunes = ["yes","no"]
-# Nested loops to iterate over different parameter values
-create_directory(folddirec+os.sep+"Gemma2-Heritability")
+clumpprunes = ["yes"]
 
+# Nested loops to iterate over different parameter values
+create_directory(folddirec+os.sep+"Gemma-LDSC-Heritability")
 for p1_val in p_window_size:
  for p2_val in p_slide_size: 
   for p3_val in p_LD_threshold:
@@ -323,7 +345,7 @@ for p1_val in p_window_size:
         for clumpprune in clumpprunes:
          for relatedmatrix in relatedmatrixs:
           for data  in datas:
-            transform_gemma_data(folddirec, newtrainfilename,model, p, clumpprune,relatedmatrix,data,str(p1_val), str(p2_val), str(p3_val), str(c1_val), str(c2_val), str(c3_val), "Gemma2-Heritability")
+            transform_gemma_data(folddirec, newtrainfilename,model, p, clumpprune,relatedmatrix,data,str(p1_val), str(p2_val), str(p3_val), str(c1_val), str(c2_val), str(c3_val), "Gemma-LDSC-Heritability")
             #exit(0)
 exit(0)
 

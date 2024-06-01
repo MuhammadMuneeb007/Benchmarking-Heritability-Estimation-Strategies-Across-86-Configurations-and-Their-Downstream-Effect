@@ -1,4 +1,122 @@
- 
+#!/usr/bin/env python
+# coding: utf-8
+
+# # LDpred-2 
+# 
+# In this notebook, we will use LDpred-2 to calculate the Polygenic Risk Score (PRS).
+# 
+# **Note:** LDpred-2 needs to be installed using R.
+# 
+# We will use the same flow of the code, and when we have to invoke LDpred-2 functions, we will call the script using Python. When LDpred-2 finishes executions, results will be stored in the specific directories for each fold and will be retrieved in Python for further calculations.
+# 
+# ## Install LDpred-2
+# 
+# Install LDpred-2 using the following commands:
+# 
+# 1. Activate the conda Environment.
+# 2. Type R
+# 3. Run the following commands:
+# 
+# ```R
+# install.packages("remotes")
+# library(remotes)
+# remotes::install_github("https://github.com/privefl/bigsnpr.git")
+# ```
+# 
+# The content in this notebook has been taken from the [PRS Tutorial](https://choishingwan.github.io/PRS-Tutorial/ldpred/), [LDpred-2 Documentation](https://privefl.github.io/bigsnpr/articles/LDpred2.html), and [Polygenic Scores (PGS)](https://privefl.github.io/bigsnpr-extdoc/polygenic-scores-pgs.html).
+# 
+# Thanks to Florian Privé for creating one of the best documentations explaining each aspect of the calculation. We will be using LDpred-2 for cross-validation design and hyper-parameter optimization, and this tutorial complements the existing one.
+# 
+# 
+
+# ## LDpred-2  Hyperparameters
+# 
+# ### Hyperparameters for LDpred-2  performed using PLINK
+# 
+# #### Pruning Parameters
+# 
+# Informs Plink that we wish to perform pruning with a window size of 200 variants, sliding across the genome with a step size of 50 variants at a time, and filter out any SNPs with LD \( r^2 \) higher than 0.25.
+# 
+# 
+# ```python
+# 1. p_window_size = [200]
+# 2. p_slide_size = [50]
+# 3. p_LD_threshold = [0.25]
+# ```
+# 
+# #### Clumping Parameters
+# 
+# The P-value threshold for an SNP to be included. 1 means to include all SNPs for clumping. SNPs having \( r^2 \) higher than 0.1 with the index SNPs will be removed. SNPs within 200k of the index SNP are considered for clumping.
+# 
+# ```python
+# 1. clump_p1 = [1]
+# 2. clump_r2 = [0.1]
+# 3. clump_kb = [200]
+# ```
+# #### PCA
+# Pca also affects the results evident from the initial analysis; however, including more PCA overfits the model. 
+# 
+# ### Hyperparameters for LDpred-2 
+#  
+# 
+# 
+# #### Heritability
+# 
+# To calculate h2 using LDpred-2, we followed the [LDpred-2 tutorial](https://choishingwan.github.io/PRS-Tutorial/ldpred/).
+# The code for this part is in R, as LDpred-2 is in R.
+# 
+# 1. Using SNPs from the HapMap as preferred by the authors. The name in the code is `LDpred-2_hapmap`.
+# 2. Using all the SNPs. The name in the code is `LDpred-2_full`.
+# 
+# This approach is computationally expensive, as the correlation between all the SNPs in a specific chromosome is being calculated.
+# 
+# ## LDpred-2 Models
+# 
+# Each model has its own set of hyperparameters, so first, we will generate those hyperparameters for those models and call them when invoking LDpred-2.
+# 
+# Use the following R code to know more about the hyperparameters:
+# - `help(snp_ldpred2_inf)`
+# - `help(snp_ldpred2_grid)`
+# - `help(snp_ldpred2_auto)`
+# - `help(snp_lassosum2)`
+# 
+# ### 1. LDpred2-inf: Infinitesimal Model
+# 
+# No Hyperparameters
+# 
+# ### 2. LDpred2(-grid): Grid of Models
+# 
+# Each model has its own set of parameters:
+# - `burn_in = 100`
+# - `num_iter = 10`
+# - `p = c(1e-4, 1e-5)`
+# - `h2 = c(0.1, 0.2)`
+# - `sparse = c(FALSE, TRUE)`
+# 
+# ### 3. LDpred2-auto: Automatic Model
+# 
+# - `burn_in = 100`
+# - `num_iter = 100`
+# - `sparse = c(FALSE, TRUE)`
+# - `alpha_bounds = c(1, 0.5)`
+# - `use_MLE = c(FALSE, TRUE)`
+# - `p = c(1e-4, 1e-5)`
+# - `shrink_corr = 0.7`
+# - `allow_jump_sign = c(FALSE, TRUE)`
+# 
+# ### 4. lassosum2: Grid of Models
+# 
+# - `lambda = c(0.001, 0.01, 0.1, 1)`
+# - `delta = 30`
+# 
+# We will execute the code for each mkodel seperatly.
+# 
+
+# ### GWAS file processing for Plink.
+# When the effect size relates to disease risk and is thus given as an odds ratio (OR) rather than BETA (for continuous traits), the PRS is computed as a product of ORs. To simplify this calculation, take the natural logarithm of the OR so that the PRS can be computed using summation instead.
+
+# In[ ]:
+
 import os
 import sys
 import pandas as pd
@@ -12,19 +130,29 @@ df = pd.read_csv(GWAS,compression= "gzip",sep="\s+")
 import pandas as pd
 if "BETA" in df.columns.to_list():
     df = df[['CHR', 'BP', 'SNP', 'A1', 'A2', 'N', 'SE', 'P', 'BETA', 'INFO', 'MAF']]
-    df['Z'] = df['BETA'] / df['SE']
-    df = df[['SNP','N','Z','A1', 'A2']]
-
-
+    print("yes")
 else:
     df["BETA"] = np.log(df["OR"])
     df = df[['CHR', 'BP', 'SNP', 'A1', 'A2', 'N', 'SE', 'P', 'BETA', 'INFO', 'MAF']]
-    df['Z'] = df['BETA'] / df['SE']
-    df = df[['SNP','N','Z','A1', 'A2']]
+
+df.to_csv(filedirec + os.sep +filedirec+".txt",sep="\t",index=False)
 
 
-df.to_csv(filedirec + os.sep +filedirec+".gemma.txt",sep="\t",index=False)
- 
+
+# ### Define Hyperparameters
+# 
+# Define hyperparameters to be optimized and set initial values.
+# 
+# ### Extract Valid SNPs from Clumped File
+# 
+# For Windows, download `gwak`, and for Linux, the `awk` command is sufficient. For Windows, `GWAK` is required. You can download it from [here](https://sourceforge.net/projects/gnuwin32/). Get it and place it in the same directory.
+# 
+#     
+
+# ## 1. LDpred2-inf: Infinitesimal Model
+
+# In[7]:
+
 
 from operator import index
 import pandas as pd
@@ -71,14 +199,24 @@ p_LD_threshold = [0.25]  # List containing pruning parameter 'LD_threshold'
 
 # Kindly note that the number of p-values to be considered varies, and the actual p-value depends on the dataset as well.
 # We will specify the range list here.
- 
+
+minimumpvalue = 4  # Minimum p-value in exponent
+numberofintervals = 10  # Number of intervals to be considered
+allpvalues = np.logspace(-minimumpvalue, 0, numberofintervals, endpoint=True)  # Generating an array of logarithmically spaced p-values
+count = 1
+with open(folddirec + os.sep + 'range_list', 'w') as file:
+    for value in allpvalues:
+        file.write(f'pv_{value} 0 {value}\n')  # Writing range information to the 'range_list' file
+        count = count + 1
+
+pvaluefile = folddirec + os.sep + 'range_list'
 
 # Initializing an empty DataFrame with specified column names
 prs_result = pd.DataFrame(columns=["clump_p1", "clump_r2", "clump_kb", "p_window_size", "p_slide_size", "p_LD_threshold",
                                 "numberofpca","h2model","h2","numberofvariants","clumpprune","relatedmatrix","data"])
 
  
-def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relatedmatrix,data,p1_val, p2_val, p3_val, c1_val, c2_val, c3_val,Name):
+def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relatedmatrix,data,p1_val, p2_val, p3_val, c1_val, c2_val, c3_val,Name,pvaluefile):
 
     ### First perform clumping on the file and save the clumpled file.
     
@@ -92,7 +230,7 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     "--indep-pairwise", p1_val, p2_val, p3_val,
     "--out", traindirec+os.sep+trainfilename
     ]
-    subprocess.call(command)
+    subprocess.run(command)
     # First perform pruning and then clumping and the pruning.
  
     command = [
@@ -107,7 +245,7 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     "--clump-field", "P",
     "--out", traindirec+os.sep+trainfilename
     ]    
-    subprocess.call(command)
+    subprocess.run(command)
 
     # Extract the valid SNPs from th clumped file.
     # For windows download gwak for linux awk commmand is sufficient.
@@ -130,7 +268,7 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     "--extract", traindirec+os.sep+trainfilename+".valid.snp",
     "--out", traindirec+os.sep+newtrainfilename+".clumped.pruned"
     ]
-    subprocess.call(command)
+    subprocess.run(command)
     
     # Also extract the PCA at this point.
     command = [
@@ -140,7 +278,7 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
         "--pca", p,
         "--out", traindirec+os.sep+trainfilename
     ]
-    subprocess.call(command)
+    subprocess.run(command)
     
     # At this stage, we will merge the PCA and COV file. 
     tempphenotype_train = pd.read_table(traindirec+os.sep+newtrainfilename+".clumped.pruned"+".fam", sep="\s+",header=None)
@@ -148,9 +286,7 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     phenotype = tempphenotype_train[[0,1,5]]
     phenotype.to_csv(traindirec+os.sep+trainfilename+".PHENO",sep="\t",header=['FID', 'IID', 'PHENO'],index=False)
  
-    #pcs_train = pd.read_table(traindirec+os.sep+trainfilename+".eigenvec", sep="\s+",header=None, names=["FID", "IID"] + [f"PC{str(i)}" for i in range(1, int(p)+1)])
-    pcs_train = pd.read_table(traindirec+os.sep+trainfilename+".eigenvec", sep="\s+", header=None, names=["FID", "IID"] + ["PC{}".format(str(i)) for i in range(1, int(p) + 1)])
-
+    pcs_train = pd.read_table(traindirec+os.sep+trainfilename+".eigenvec", sep="\s+",header=None, names=["FID", "IID"] + [f"PC{str(i)}" for i in range(1, int(p)+1)])
     covariate_train = pd.read_table(traindirec+os.sep+trainfilename+".cov",sep="\s+")
     covariate_train.iloc[:, 2:].to_csv(traindirec+os.sep+trainfilename+".covgemma", header=False, index=False,sep="\t")
  
@@ -172,10 +308,10 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
     relatedmatrixname = ""
     if relatedmatrix=="1":
         relatedmatrixname = "centered"
-         
+        outputfilename = "output/"+traindirec+".cXX.txt"
     else: 
         relatedmatrixname = "standardized"
-         
+        outputfilename = "output/"+traindirec+".sXX.txt"
     
     h2modelname = ""
 
@@ -190,6 +326,7 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
         BFILE = traindirec+os.sep+newtrainfilename+".clumped.pruned"
     else:
         BFILE = traindirec+os.sep+newtrainfilename
+ 
 
     def readvariants(tempfile):
         file_path = "output"+os.sep+tempfile+".log.txt" 
@@ -208,12 +345,12 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
                     pve_estimate = line.split("=")[-1].strip()
                     print("PVE Estimate:", pve_estimate)
                     return pve_estimate
-
+    
     try:
         os.mkdir("output/"+filedirec)
     except:
-        pass
-
+        pass    
+    
     try:
         os.remove("output/"+traindirec+".sXX.txt")
     except:
@@ -231,46 +368,62 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
 
     if data == "genotype":
         print("Processing genotype data")
-
-        subprocess.call(["./gemma",
-                        "-beta", filedirec + os.sep +filedirec+".gemma.txt",
-                        "-bfile", BFILE,
-                        "-vc", models,
-                        "-o", traindirec])
-
-
-        temppve =  readpve(traindirec)             
+        subprocess.run(["./DPR",
+                "--bfile", BFILE,
+                "-gk", relatedmatrix,
+                "-o", traindirec])
         tempvariants = readvariants(traindirec)
 
-    elif data == "genotype_covariate":
+        subprocess.run(["./gemma",
+                        "-p", BFILE+".fam",
+                        "-k", outputfilename,
+                        "-n", "6",
+                        "-vc", model,
+                        "-o", traindirec])
+ 
+        temppve =  readpve(traindirec)   
+    
+
+    if data == "genotype_covariate":
+        subprocess.run(["./DPR",
+                "--bfile", BFILE,
+                "-gk", relatedmatrix,
+                "-o", traindirec])
+        tempvariants = readvariants(traindirec)
+
         subprocess.run([
                 './gemma',
-                "-beta", filedirec + os.sep +filedirec+".gemma.txt",
-                "-bfile", BFILE,
-                "-vc", models,
+                '-p', BFILE+".fam",
+                '-k', outputfilename,
+                '-n', '6',
+                '-vc', model,
                 '-c', traindirec+os.sep+trainfilename+".covgemma",
                 '-o', traindirec
             ])
-    
-        temppve =  readpve(traindirec)             
+ 
+        temppve =  readpve(traindirec)   
+        
+
+
+    if data == "genotype_covariate_pca":
+        subprocess.run(["./DPR",
+                "--bfile", BFILE,
+                "-gk", relatedmatrix,
+                "-o", traindirec])
         tempvariants = readvariants(traindirec)
-
-
-    elif data == "genotype_covariate_pca":
-
+ 
         subprocess.run([
                 './gemma',
-                "-beta", filedirec + os.sep +filedirec+".gemma.txt",
-                "-bfile", BFILE,
-                "-vc", models,
+                '-p', BFILE+".fam",
+                '-k', outputfilename,
+                '-n', '6',
+                '-vc', model,
                 '-c', traindirec+os.sep+trainfilename+".COV_PCAgemma",
                 '-o', traindirec
             ])
 
-        temppve =  readpve(traindirec)             
-        tempvariants = readvariants(traindirec)
-
-
+        temppve =  readpve(traindirec)   
+        
 
 
 
@@ -284,14 +437,10 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
         "p_LD_threshold": p3_val,
 
         "h2":temppve,
-        "h2model":h2modelname+"_"+data,
+        "h2model":h2modelname+"_"+relatedmatrixname+"_"+data,
         "clumpprune":clumpprune,
         "numberofvariants":tempvariants,
         "numberofpca":p,
-        
-  
-        #"relatedmatrix":relatedmatrixname,
-        #"data":data,
          
     }, ignore_index=True)
 
@@ -302,16 +451,15 @@ def transform_gemma_data(traindirec, newtrainfilename,models,p, clumpprune,relat
 
  
 #-gk 1 calculates the centered relatedness matrix while “-gk 2” calculates the standardized relatedness matrix; “ 
-relatedmatrixs = ["1"]
+relatedmatrixs = ["1","2"]
 #”-vc 1” (default) uses HE regression and ”-vc 2” uses REML AI algorithm;
-h2models = ["1"]
+h2models = ["1","2"]
 datas = ["genotype","genotype_covariate","genotype_covariate_pca"]
 #datas = ["genotype_covariate","genotype_covariate_pca"]
 
 clumpprunes = ["yes","no"]
 # Nested loops to iterate over different parameter values
-create_directory(folddirec+os.sep+"Gemma2-Heritability")
-
+create_directory(folddirec+os.sep+"DPR-Gemma-Heritability")
 for p1_val in p_window_size:
  for p2_val in p_slide_size: 
   for p3_val in p_LD_threshold:
@@ -323,7 +471,7 @@ for p1_val in p_window_size:
         for clumpprune in clumpprunes:
          for relatedmatrix in relatedmatrixs:
           for data  in datas:
-            transform_gemma_data(folddirec, newtrainfilename,model, p, clumpprune,relatedmatrix,data,str(p1_val), str(p2_val), str(p3_val), str(c1_val), str(c2_val), str(c3_val), "Gemma2-Heritability")
+            transform_gemma_data(folddirec, newtrainfilename,model, p, clumpprune,relatedmatrix,data,str(p1_val), str(p2_val), str(p3_val), str(c1_val), str(c2_val), str(c3_val), "DPR-Gemma-Heritability", pvaluefile)
             #exit(0)
 exit(0)
 
